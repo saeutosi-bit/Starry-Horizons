@@ -1,1 +1,300 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Электронный дневник</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1a0b3d, #0d1b4b, #3d0b4a);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #fff;
+  }
+  .container {
+    width: 100%;
+    max-width: 720px;
+    background: rgba(30, 20, 60, 0.95);
+    border: 2px solid rgba(160, 120, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 0 60px rgba(140, 80, 255, 0.5);
+    overflow: hidden;
+  }
+  .header {
+    background: linear-gradient(135deg, #5a2fb8, #8b3fd9);
+    padding: 26px;
+    text-align: center;
+  }
+  .header h1 { font-size: 24px; }
+  .header p { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+  .body { padding: 28px; }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1;
+    min-width: 90px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(160, 120, 255, 0.3);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 24px;
+    font-weight: 800;
+    color: #d4a5ff;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: #c9b8ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px;
+    border-radius: 14px;
+    border: 1px solid rgba(160, 120, 255, 0.3);
+  }
+  .tab {
+    flex: 1;
+    padding: 13px;
+    background: transparent;
+    color: #c9b8ff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: inherit;
+  }
+  .tab:hover { background: rgba(160, 120, 255, 0.15); }
+  .tab.active {
+    background: linear-gradient(135deg, #7b3ff7, #b04bff);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(140, 80, 255, 0.7);
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card {
+    background: rgba(255, 255, 255, 0.06);
+    border-left: 4px solid #b04bff;
+    border-radius: 12px;
+    padding: 15px 18px;
+    margin-bottom: 11px;
+  }
+  .card .subject { font-weight: 700; font-size: 16px; }
+  .card .task { color: #d5ccf5; font-size: 14px; margin-top: 6px; line-height: 1.5; }
+  .card .date { color: #ff9bc4; font-size: 12px; margin-top: 9px; font-weight: 600; }
+
+  .grade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 18px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border-left: 4px solid #8b3fd9;
+  }
+  .grade-row .left { display: flex; flex-direction: column; }
+  .grade-row .subject { font-weight: 700; font-size: 16px; }
+  .grade-row .date { color: #ff9bc4; font-size: 12px; margin-top: 4px; font-weight: 600; }
+  .grade {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-weight: 800;
+    color: #fff;
+    font-size: 19px;
+  }
+  .g5 { background: #27ae60; }
+  .g4 { background: #2980b9; }
+  .g3 { background: #e67e22; }
+  .g2 { background: #e74c3c; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🚀 Электронный дневник</h1>
+    <p>Общий дневник класса</p>
+  </div>
+  <div class="body">
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num" id="statHw">0</div>
+        <div class="label">Заданий</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statGr">0</div>
+        <div class="label">Оценок</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="statAvg">—</div>
+        <div class="label">Средний балл</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="showTab(1)">📚 ДЗ</button>
+      <button class="tab" onclick="showTab(2)">🏆 Оценки</button>
+    </div>
+
+    <!-- ==== ДЗ ==== -->
+    <div id="sec1" class="section active">
+      <div class="card">
+        <div class="subject">Luau</div>
+        <div class="task">Стр. 45, № 1–5</div>
+        <div class="date">📅 На 18.10.2026</div>
+      </div>
+    </div>
+
+    <!-- ==== ОЦЕНКИ ==== -->
+    <div id="sec2" class="section">
+      <div class="grade-row">
+        <div class="left">
+          <span class="subject">Luau</span>
+          <span class="date">📅 14.10.2026</span>
+          <span class="date">Влад</span>
+        </div>
+        <span class="grade g5">5</span>
+      </div>
+    </div>
+
+    <!-- ==== НАСТРОЙКИ ==== -->
+    <div id="sec3" class="section">
+      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(160,120,255,0.3);border-radius:14px;padding:18px;margin-bottom:14px;">
+        <h3 style="font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🎨 Тема оформления</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <button onclick="setTheme('space')" style="padding:14px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🚀 Космос</button>
+          <button onclick="setTheme('forest')" style="padding:14px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🌲 Лес</button>
+          <button onclick="setTheme('water')" style="padding:14px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🌊 Вода</button>
+          <button onclick="setTheme('air')" style="padding:14px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">☁️ Воздух</button>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(160,120,255,0.3);border-radius:14px;padding:18px;margin-bottom:14px;">
+        <h3 style="font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🌐 Язык</h3>
+        <div style="display:flex;gap:10px;">
+          <button onclick="setLang('ru')" style="flex:1;padding:12px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🇷🇺 Русский</button>
+          <button onclick="setLang('en')" style="flex:1;padding:12px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(160,120,255,0.3);border-radius:14px;padding:18px;">
+        <h3 style="font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;">🔤 Размер шрифта</h3>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <button onclick="changeFont(-1)" style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(160,120,255,0.3);cursor:pointer;font-weight:800;font-family:inherit;font-size:16px;">A−</button>
+          <div style="flex:1;text-align:center;font-weight:700;color:#d4a5ff;">Aa</div>
+          <button onclick="changeFont(1)" style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(160,120,255,0.3);cursor:pointer;font-weight:800;font-family:inherit;font-size:16px;">A+</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* Переключение вкладок */
+function showTab(n) {
+  var secs = ['sec1', 'sec2', 'sec3'];
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < 3; i++) {
+    document.getElementById(secs[i]).classList.toggle('active', i === n - 1);
+    tabs[i].classList.toggle('active', i === n - 1);
+  }
+}
+
+/* Статистика */
+(function countStats() {
+  var hwCount = document.querySelectorAll('#sec1 .card').length;
+  var grRows = document.querySelectorAll('#sec2 .grade-row');
+  var sum = 0;
+  for (var i = 0; i < grRows.length; i++) {
+    var g = grRows[i].querySelector('.grade').textContent;
+    sum += parseInt(g);
+  }
+  document.getElementById('statHw').textContent = hwCount;
+  document.getElementById('statGr').textContent = grRows.length;
+  document.getElementById('statAvg').textContent = grRows.length
+    ? (sum / grRows.length).toFixed(2)
+    : '—';
+})();
+
+/* Тема */
+function setTheme(theme) {
+  var body = document.body;
+  var bg;
+  if (theme === 'forest') {
+    bg = 'linear-gradient(135deg, #051208, #0a2416, #052010)';
+  } else if (theme === 'water') {
+    bg = 'linear-gradient(135deg, #01101e, #062848, #021a30)';
+  } else if (theme === 'air') {
+    bg = 'linear-gradient(135deg, #dfe9f5, #eaf1fa, #d4e2f2)';
+  } else {
+    bg = 'linear-gradient(135deg, #1a0b3d, #0d1b4b, #3d0b4a)';
+  }
+  body.style.background = bg;
+  try { localStorage.setItem('theme', theme); } catch (e) {}
+}
+
+/* Язык (просто меняет заголовки) */
+function setLang(lang) {
+  var texts = {
+    ru: { h1: '🚀 Электронный дневник', p: 'Общий дневник класса' },
+    en: { h1: '🚀 Electronic Diary', p: 'Class Diary' }
+  };
+  document.querySelector('.header h1').textContent = texts[lang].h1;
+  document.querySelector('.header p').textContent = texts[lang].p;
+  try { localStorage.setItem('lang', lang); } catch (e) {}
+}
+
+/* Размер шрифта */
+var fontSize = 15;
+function changeFont(delta) {
+  fontSize = Math.max(12, Math.min(22, fontSize + delta));
+  document.body.style.fontSize = fontSize + 'px';
+  try { localStorage.setItem('fontSize', fontSize); } catch (e) {}
+}
+
+/* Восстановление настроек */
+try {
+  var savedTheme = localStorage.getItem('theme');
+  if (savedTheme) setTheme(savedTheme);
+  var savedLang = localStorage.getItem('lang');
+  if (savedLang) setLang(savedLang);
+  var savedFont = localStorage.getItem('fontSize');
+  if (savedFont) {
+    fontSize = parseInt(savedFont);
+    document.body.style.fontSize = fontSize + 'px';
+  }
+} catch (e) {}
+</script>
+
+</body>
+</html>
